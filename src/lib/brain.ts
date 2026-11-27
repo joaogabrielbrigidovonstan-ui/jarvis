@@ -1,6 +1,7 @@
 import { BACKEND } from '../config'
 import * as direct from './anthropic'
 import * as gemini from './gemini'
+import * as openrouter from './openrouter'
 import * as bridge from './bridge'
 import type { AskHandlers, Msg } from './anthropic'
 import type { Blade, Panel } from '../store'
@@ -38,6 +39,16 @@ export async function ask(
     }))
     return gemini.ask(
       [...gemHistory, { role: 'user' as const, parts: prompt }],
+      handlers,
+    )
+  }
+  if (BACKEND === 'openrouter') {
+    const orHistory = history.map((m) => ({
+      role: m.role === 'assistant' ? ('assistant' as const) : ('user' as const),
+      content: typeof m.content === 'string' ? m.content : '',
+    }))
+    return openrouter.ask(
+      [...orHistory, { role: 'user' as const, content: prompt }],
       handlers,
     )
   }
@@ -103,6 +114,7 @@ export function watchCapture(
 export function cancel(): void {
   if (usingBridge) bridge.cancel()
   else if (BACKEND === 'gemini') gemini.cancel()
+  else if (BACKEND === 'openrouter') openrouter.cancel()
   else direct.cancel()
 }
 
@@ -140,5 +152,6 @@ export function watchConnection(
 export function connectedLabels(): string[] {
   if (usingBridge) return bridge.bridgeServers()
   if (BACKEND === 'gemini') return gemini.connectedLabels()
+  if (BACKEND === 'openrouter') return openrouter.connectedLabels()
   return direct.connectedLabels()
 }

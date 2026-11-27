@@ -24,3 +24,12 @@ O app já está configurado com Capacitor (pasta `android/` gerada). Para compil
 - O "cérebro" (Claude Code) roda no `bridge` — no app nativo, o bridge precisa estar
   rodando em uma máquina acessível, ou o app funciona apenas na interface visual.
 - A pasta `android/` é gerada pelo Capacitor; não edite à mão sem `npx cap sync`.
+
+## Brain / backend
+
+- `VITE_BACKEND` pode ser `bridge` (padrão, exige `npm run bridge`), `direct`
+  (chave da API Anthropic) ou `gemini` (chave gratuita do Google Gemini, funciona
+  sozinho no celular).
+- Para um APK independente no celular, compile com `VITE_BACKEND=gemini` e
+  `VITE_GEMINI_API_KEY` (grátis, sem cartão) — ver `src/lib/gemini.ts`.
+- O input `gemini_key` do workflow (`workflow_dispatch`) injeta a chave no build.

@@ -473,6 +473,11 @@ export default function App() {
         'No Gemini API key — set VITE_GEMINI_API_KEY to build the app.',
       )
     }
+    if (!usingBridge && BACKEND === 'openrouter' && !env.openrouterKey) {
+      s.setError(
+        'No OpenRouter API key — set VITE_OPENROUTER_API_KEY to build the app.',
+      )
+    }
 
     // Pull the neural voice down during the boot sequence so the first
     // "Hey Jarvis" isn't waiting on an 86MB download. Deliberately not awaited

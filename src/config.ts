@@ -59,12 +59,16 @@ function flag(name: string, raw: unknown, fallback: boolean): boolean {
  *              the bundle and only reaches remote HTTP MCP servers.
  *
  *   'gemini' — the browser calls the Google Gemini API. Free tier, no card.
- *              Needs VITE_GEMINI_API_KEY in the bundle. No MCP servers.
+ *  *              Needs VITE_GEMINI_API_KEY in the bundle. No MCP servers.
+ *
+ *   'openrouter' — the browser calls the OpenRouter API (OpenAI-compatible).
+ *                  Free models available, no card. Needs VITE_OPENROUTER_API_KEY.
+ *                  No MCP servers.
  */
-export const BACKEND: 'bridge' | 'direct' | 'gemini' = choice(
+export const BACKEND: 'bridge' | 'direct' | 'gemini' | 'openrouter' = choice(
   'VITE_BACKEND',
   import.meta.env.VITE_BACKEND,
-  ['bridge', 'direct', 'gemini'] as const,
+  ['bridge', 'direct', 'gemini', 'openrouter'] as const,
   'bridge',
 )
 
@@ -134,6 +138,7 @@ export const KOKORO_VOICE = choice(
 export const env = {
   anthropicKey: str(import.meta.env.VITE_ANTHROPIC_API_KEY) ?? '',
   geminiKey: str(import.meta.env.VITE_GEMINI_API_KEY) ?? '',
+  openrouterKey: str(import.meta.env.VITE_OPENROUTER_API_KEY) ?? '',
   elevenKey: str(import.meta.env.VITE_ELEVENLABS_API_KEY) ?? '',
   elevenVoiceId:
     str(import.meta.env.VITE_ELEVENLABS_VOICE_ID) ?? 'JBFqnCBsd6RMkjVDRZzb',
@@ -144,6 +149,7 @@ export const env = {
  *  quality for lower latency if you find responses feel slow on camera. */
 export const MODEL = 'claude-opus-5'
 export const GEMINI_MODEL = 'gemini-2.0-flash'
+export const OPENROUTER_MODEL = 'meta-llama/llama-3.3-70b-instruct:free'
 
 /**
  * Fast mode runs the same Opus 5 at up to 2.5x output speed. It is a research
