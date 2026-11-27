@@ -195,7 +195,7 @@ export function Pointer() {
           // Which hand, and what it is doing. Naming the hand matters once
           // there are two of them: it is the only way to tell at a glance
           // which cursor is yours to move.
-          const tag = `${hand.handedness === 'right' ? 'RIGHT' : 'LEFT'} · ${hand.gesture.toUpperCase()}`
+          const tag = `${hand.handedness === 'right' ? 'DIREITA' : 'ESQUERDA'} · ${hand.gesture.toUpperCase()}`
           ctx.fillText(tag, p[WRIST].x, p[WRIST].y + 22 * scale)
         }
       }

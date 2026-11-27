@@ -31,7 +31,7 @@ import {
 } from './lib/brain'
 import { startAnalyser, micLevel } from './lib/audio'
 import { probeCapabilities } from './lib/capabilities'
-import { env } from './config'
+import { env, BACKEND } from './config'
 
 /**
  * The conversation.
@@ -203,7 +203,7 @@ export default function App() {
       sfx.play('error')
       store
         .getState()
-        .setError(err instanceof Error ? err.message : 'Something went wrong.')
+        .setError(err instanceof Error ? err.message : 'Algo deu errado.')
     } finally {
       if (!stale()) {
         speaker.current = null
@@ -340,8 +340,8 @@ export default function App() {
         .getState()
         .setError(
           err instanceof Error
-            ? `Power-up failed: ${err.message}`
-            : 'Power-up failed. Click to try again.',
+            ? `Falha ao ligar: ${err.message}`
+            : 'Falha ao ligar. Clique para tentar novamente.',
         )
     }
   }
@@ -377,9 +377,9 @@ export default function App() {
       const note =
         req.mode === 'watch'
           ? req.when === 'past'
-            ? req.reason || 'reviewing the last few seconds'
-            : `${req.reason || 'watching'} · ${req.seconds}s`
-          : req.reason || 'taking a look'
+            ? req.reason || 'revisando os últimos segundos'
+            : `${req.reason || 'observando'} · ${req.seconds}s`
+          : req.reason || 'dando uma olhada'
       store.getState().setLooking(note)
 
       // The past is only available if something has been remembering it, and
@@ -463,9 +463,14 @@ export default function App() {
     })
     const warming = warm().catch((err: Error) => s.setError(err.message))
 
-    if (!usingBridge && !env.anthropicKey) {
+    if (!usingBridge && BACKEND === 'direct' && !env.anthropicKey) {
       s.setError(
         'No Anthropic API key — copy .env.example to .env.local and set VITE_ANTHROPIC_API_KEY.',
+      )
+    }
+    if (!usingBridge && BACKEND === 'gemini' && !env.geminiKey) {
+      s.setError(
+        'No Gemini API key — set VITE_GEMINI_API_KEY to build the app.',
       )
     }
 
@@ -640,13 +645,13 @@ export default function App() {
         silence()
         const t = createSpeaker()
         speaker.current = t
-        t.say('Audio test. If you can hear this, speech output is working, sir.')
+        t.say('Teste de áudio. Se você consegue me ouvir, a saída de voz está funcionando, senhor.')
         void t.end().then(() => {
           const d = (window as unknown as Record<string, Record<string, unknown>>).__tts
           console.info('[jarvis] audio test →', d)
           if (d && d.started === 0 && d.rescued === 0) {
             store.getState().setError(
-              `No sound produced. engine=${d.engine} voice=${d.voice} error=${d.lastError || 'none'}`,
+              `Nenhum som produzido. motor=${d.engine} voz=${d.voice} erro=${d.lastError || 'nenhum'}`,
             )
           }
         })

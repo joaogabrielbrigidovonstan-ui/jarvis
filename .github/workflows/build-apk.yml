@@ -5,8 +5,8 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      anthropic_key:
-        description: 'Chave da API Anthropic (começa com sk-ant-)'
+      gemini_key:
+        description: 'Chave da API Google Gemini (grátis, sem cartão)'
         required: true
 
 jobs:
@@ -41,8 +41,8 @@ jobs:
       - name: Build web assets
         run: npm run build
         env:
-          VITE_BACKEND: direct
-          VITE_ANTHROPIC_API_KEY: ${{ github.event.inputs.anthropic_key }}
+          VITE_BACKEND: gemini
+          VITE_GEMINI_API_KEY: ${{ github.event.inputs.gemini_key }}
 
       - name: Sync Capacitor with Android
         run: npx cap sync android

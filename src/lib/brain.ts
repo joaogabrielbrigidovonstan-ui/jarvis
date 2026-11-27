@@ -1,5 +1,6 @@
 import { BACKEND } from '../config'
 import * as direct from './anthropic'
+import * as gemini from './gemini'
 import * as bridge from './bridge'
 import type { AskHandlers, Msg } from './anthropic'
 import type { Blade, Panel } from '../store'
@@ -29,9 +30,18 @@ export async function ask(
   history: Msg[],
   handlers: AskHandlers,
 ): Promise<{ text: string; tools: string[] }> {
-  return usingBridge
-    ? bridge.ask(prompt, handlers)
-    : direct.ask([...history, { role: 'user', content: prompt }], handlers)
+  if (usingBridge) return bridge.ask(prompt, handlers)
+  if (BACKEND === 'gemini') {
+    const gemHistory = history.map((m) => ({
+      role: m.role === 'assistant' ? ('model' as const) : ('user' as const),
+      parts: typeof m.content === 'string' ? m.content : '',
+    }))
+    return gemini.ask(
+      [...gemHistory, { role: 'user' as const, parts: prompt }],
+      handlers,
+    )
+  }
+  return direct.ask([...history, { role: 'user', content: prompt }], handlers)
 }
 
 export async function warm(): Promise<void> {
@@ -92,6 +102,7 @@ export function watchCapture(
  */
 export function cancel(): void {
   if (usingBridge) bridge.cancel()
+  else if (BACKEND === 'gemini') gemini.cancel()
   else direct.cancel()
 }
 
@@ -127,5 +138,7 @@ export function watchConnection(
 
 /** Labels for the HUD's SYSTEMS rail. */
 export function connectedLabels(): string[] {
-  return usingBridge ? bridge.bridgeServers() : direct.connectedLabels()
+  if (usingBridge) return bridge.bridgeServers()
+  if (BACKEND === 'gemini') return gemini.connectedLabels()
+  return direct.connectedLabels()
 }

@@ -25,6 +25,7 @@
     "@capacitor/android": "^8.6.3",
     "@capacitor/cli": "^8.6.3",
     "@capacitor/core": "^8.6.3",
+    "@google/generative-ai": "^0.24.1",
     "@mediapipe/tasks-vision": "^1.0.1",
     "@picovoice/porcupine-web": "^4.0.1",
     "@picovoice/web-voice-processor": "^4.0.10",
