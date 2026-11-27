@@ -5,10 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      bridge_url:
-        description: 'IP do seu computador na rede (ex: ws://192.168.0.10:8787)'
-        required: false
-        default: 'ws://localhost:8787'
+      anthropic_key:
+        description: 'Chave da API Anthropic (começa com sk-ant-)'
+        required: true
 
 jobs:
   build-apk:
@@ -42,7 +41,8 @@ jobs:
       - name: Build web assets
         run: npm run build
         env:
-          VITE_BRIDGE_URL: ${{ github.event.inputs.bridge_url || 'ws://localhost:8787' }}
+          VITE_BACKEND: direct
+          VITE_ANTHROPIC_API_KEY: ${{ github.event.inputs.anthropic_key }}
 
       - name: Sync Capacitor with Android
         run: npx cap sync android
